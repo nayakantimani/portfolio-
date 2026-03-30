@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Think Connect - Your Digital Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+     PDF Generation Libraries 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+     Chart.js for analytics 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: #e0e0e0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Enhanced Aurora Background */
+        .aurora-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at top, #1e1b4b 0%, #0a0a0f 50%, #000000 100%);
+        }
+
+        .aurora-outer {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .aurora-inner {
+            position: absolute;
+            border-radius: 50%;
+            mix-blend-mode: screen;
+            filter: blur(100px);
+            opacity: 0.4;
+        }
+
+        .aurora-inner:nth-child(1) {
+            width: 600px; height: 600px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            top: -10%; left: -10%;
+            animation: move1 20s infinite alternate;
+        }
+
+        .aurora-inner:nth-child(2) {
+            width: 500px; height: 500px;
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            top: 40%; left: 70%;
+            animation: move2 25s infinite alternate;
+        }
+
+        .aurora-inner:nth-child(3) {
+            width: 400px; height: 400px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            top: 70%; left: 10%;
+            animation: move3 30s infinite alternate;
+        }
+
+        .aurora-inner:nth-child(4) {
+            width: 350px; height: 350px;
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            top: 20%; left: 50%;
+            animation: move4 22s infinite alternate;
+        }
+
+        @keyframes move1 { 
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(150px, 100px) rotate(180deg) scale(1.1); }
+            100% { transform: translate(100px, 50px) rotate(360deg) scale(0.9); }
+        }
+        @keyframes move2 { 
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(-200px, -150px) rotate(-180deg) scale(1.2); }
+            100% { transform: translate(-150px, -80px) rotate(-360deg) scale(0.8); }
+        }
+        @keyframes move3 { 
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(120px, -200px) rotate(180deg) scale(1.1); }
+            100% { transform: translate(80px, -120px) rotate(360deg) scale(0.9); }
+        }
+        @keyframes move4 { 
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(-100px, 150px) rotate(-180deg) scale(1.3); }
+            100% { transform: translate(-50px, 100px) rotate(-360deg) scale(0.7); }
+        }
+
+        /* Glass Morphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Enhanced Buttons */
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 15px;
+            padding: 12px 24px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 12px 24px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Record Button Enhancement */
+        .record-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-gradient);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .record-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .record-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .record-button.recording {
+            background: var(--secondary-gradient);
+            animation: pulse-record 2s infinite;
+        }
+
+        @keyframes pulse-record {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Enhanced Range Slider */
+        .custom-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            cursor: pointer;
+            border-radius: 50%;
+            border: 3px solid #0a0a0f;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .custom-range::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Emotion Indicators */
+        .emotion-indicator {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 2px;
+        }
+
+        .emotion-positive { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .emotion-negative { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .emotion-neutral { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+
+        /* Loading Overlay Enhancement */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                order: 2;
+                width: 100%;
+            }
+            
+            .content-area {
+                order: 1;
+                width: 100%;
+            }
+        }
+
+        /* PDF Styles */
+        #pdf-content {
+            display: none;
+            width: 595.28pt;
+            padding: 40px;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: black;
+        }
+
+        .pdf-header {
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .pdf-section {
+            margin-bottom: 25px;
+        }
+
+        .pdf-section h3 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .pdf-transcript {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .pdf-emotion-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin: 2px;
+            font-weight: 500;
+        }
+
+        /* Quick Actions Sidebar */
+        .quick-actions {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quick-action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+     Aurora Background 
+    <div class="aurora-background">
+        <div class="aurora-outer">
+            <div class="aurora-inner"></div>
+            <div class="aurora-inner"></div>
+            <div class="aurora-inner"></div>
+            <div class="aurora-inner"></div>
+        </div>
+    </div>
+
+     Quick Actions Sidebar 
+    <div class="quick-actions">
+        <button class="quick-action-btn" id="settings-btn" title="Settings">
+            <i data-feather="settings" class="w-5 h-5"></i>
+        </button>
+        <button class="quick-action-btn" id="history-btn" title="Session History">
+            <i data-feather="clock" class="w-5 h-5"></i>
+        </button>
+        <button class="quick-action-btn" id="analytics-btn" title="Analytics">
+            <i data-feather="bar-chart-2" class="w-5 h-5"></i>
+        </button>
+        <button class="quick-action-btn" id="help-btn" title="Help">
+            <i data-feather="help-circle" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+     Main Container 
+    <main class="min-h-screen p-4 py-8">
+        <div class="max-w-7xl mx-auto">
+             Header 
+            <header class="text-center mb-12 fade-in">
+                <h1 class="text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-4">
+                    Think Connect
+                </h1>
+                <p class="text-xl text-gray-300 mb-2">Your Digital Companion for Mental Wellness</p>
+                <p class="text-gray-400">Hello Deep, I'm here to listen and understand.</p>
+            </header>
+
+             Main Content Grid 
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 Recording Section 
+                <div class="lg:col-span-1">
+                    <div class="glass-card p-8 text-center slide-up">
+                        <div class="mb-8">
+                            <div class="w-32 h-32 mx-auto mb-6 relative">
+                                <button id="recordButton" class="record-button w-full h-full">
+                                    <i data-feather="mic" class="w-8 h-8 text-white"></i>
+                                </button>
+                                <div id="recording-indicator" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full opacity-0 transition-opacity duration-300">
+                                    <div class="w-full h-full bg-red-500 rounded-full animate-ping"></div>
+                                </div>
+                            </div>
+                            <p id="status" class="text-lg font-medium text-gray-300 mb-4">Ready to listen</p>
+                            <div id="recording-timer" class="text-2xl font-mono text-blue-400 opacity-0 transition-opacity duration-300">00:00</div>
+                        </div>
+
+                         Audio Controls 
+                        <div id="audio-controls" class="hidden mb-6">
+                            <audio id="recorded-audio" controls class="w-full mb-4"></audio>
+                            <div class="flex gap-2 justify-center">
+                                <button id="play-btn" class="btn-secondary px-4 py-2 text-sm">
+                                    <i data-feather="play" class="w-4 h-4 inline mr-1"></i>Play
+                                </button>
+                                <button id="re-record-btn" class="btn-secondary px-4 py-2 text-sm">
+                                    <i data-feather="refresh-cw" class="w-4 h-4 inline mr-1"></i>Re-record
+                                </button>
+                            </div>
+                        </div>
+
+                         Session Stats 
+                        <div id="session-stats" class="grid grid-cols-2 gap-4 text-center">
+                            <div class="glass-card p-4">
+                                <div class="text-2xl font-bold text-blue-400" id="session-count">0</div>
+                                <div class="text-sm text-gray-400">Sessions</div>
+                            </div>
+                            <div class="glass-card p-4">
+                                <div class="text-2xl font-bold text-green-400" id="total-time">0m</div>
+                                <div class="text-sm text-gray-400">Total Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 Main Content Area 
+                <div class="lg:col-span-2">
+                     Welcome Screen 
+                    <div id="welcome-screen" class="glass-card p-8 bounce-in">
+                        <h2 class="text-3xl font-semibold mb-6 text-center">Welcome to Your Safe Space</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+                                <i data-feather="shield" class="w-12 h-12 text-blue-400 mx-auto mb-4"></i>
+                                <h3 class="text-lg font-semibold mb-2">Private & Secure</h3>
+                                <p class="text-gray-400 text-sm">Your conversations are completely private and secure.</p>
+                            </div>
+                            <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-500/10 to-teal-500/10 border border-green-500/20">
+                                <i data-feather="heart" class="w-12 h-12 text-green-400 mx-auto mb-4"></i>
+                                <h3 class="text-lg font-semibold mb-2">Empathetic AI</h3>
+                                <p class="text-gray-400 text-sm">Advanced AI that understands emotions and context.</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-300 mb-6">Click the microphone when you're ready to share what's on your mind.</p>
+                            <div class="flex justify-center gap-4">
+                                <button class="btn-primary">
+                                    <i data-feather="mic" class="w-4 h-4 inline mr-2"></i>Start Recording
+                                </button>
+                                <button class="btn-secondary">
+                                    <i data-feather="file-text" class="w-4 h-4 inline mr-2"></i>View Guide
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                     Transcript Section 
+                    <div id="transcript-section" class="glass-card p-8 hidden">
+                        <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                            <i data-feather="file-text" class="w-6 h-6 mr-3 text-blue-400"></i>
+                            Your Transcript
+                        </h2>
+                        <div id="transcript-content" class="bg-black/20 p-6 rounded-lg mb-6 max-h-60 overflow-y-auto">
+                            <p class="text-gray-300 leading-relaxed"></p>
+                        </div>
+                        <div id="emotion-analysis" class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3">Detected Emotions</h3>
+                            <div id="emotion-tags" class="flex flex-wrap gap-2"></div>
+                        </div>
+                        <button id="continue-to-questions" class="btn-primary w-full">
+                            <i data-feather="arrow-right" class="w-4 h-4 inline mr-2"></i>Continue to Questions
+                        </button>
+                    </div>
+
+                     Q&A Section 
+                    <div id="qa-section" class="glass-card p-8 hidden">
+                        <h2 class="text-2xl font-semibold mb-6 text-center">Help Me Understand Better</h2>
+                        <p class="text-gray-300 mb-8 text-center">Please rate how much you agree with the following statements:</p>
+                        
+                        <div id="progress-container" class="mb-8">
+                            <div class="flex justify-between text-sm text-gray-400 mb-2">
+                                <span>Progress</span>
+                                <span id="progress-text">0/5</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div id="question-container" class="space-y-8 mb-8"></div>
+                        
+                        <button id="submit-answers-button" class="btn-primary w-full text-lg py-4">
+                            <i data-feather="brain" class="w-5 h-5 inline mr-2"></i>Generate My Insights
+                        </button>
+                    </div>
+
+                     Summary Section 
+                    <div id="summary-section" class="glass-card p-8 hidden">
+                        <h2 class="text-2xl font-semibold mb-6 flex items-center">
+                            <i data-feather="lightbulb" class="w-6 h-6 mr-3 text-yellow-400"></i>
+                            Your Personal Insights
+                        </h2>
+                        
+                        <div id="summary-content" class="space-y-6 mb-8">
+                            <div id="summary-text" class="bg-gradient-to-br from-blue-500/5 to-purple-500/5 p-6 rounded-lg border border-blue-500/20">
+                                 Summary content will be inserted here 
+                            </div>
+                            
+                            <div id="recommendations" class="bg-gradient-to-br from-green-500/5 to-teal-500/5 p-6 rounded-lg border border-green-500/20">
+                                <h3 class="text-lg font-semibold mb-4 text-green-400">Personalized Recommendations</h3>
+                                <ul id="recommendation-list" class="space-y-2"></ul>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button id="download-pdf-button" class="btn-primary">
+                                <i data-feather="download" class="w-4 h-4 inline mr-2"></i>Download PDF
+                            </button>
+                            <button id="share-insights-button" class="btn-secondary">
+                                <i data-feather="share-2" class="w-4 h-4 inline mr-2"></i>Share Insights
+                            </button>
+                            <button id="restart-button" class="btn-secondary">
+                                <i data-feather="refresh-cw" class="w-4 h-4 inline mr-2"></i>New Session
+                            </button>
+                        </div>
+                    </div>
+
+                     Analytics Section 
+                    <div id="analytics-section" class="glass-card p-8 hidden">
+                        <h2 class="text-2xl font-semibold mb-6">Your Wellness Journey</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <canvas id="emotion-chart" width="400" height="200"></canvas>
+                            </div>
+                            <div>
+                                <canvas id="progress-chart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                     Settings Section 
+                    <div id="settings-section" class="glass-card p-8 hidden">
+                        <h2 class="text-2xl font-semibold mb-6">Settings</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Audio Quality</label>
+                                <select class="w-full p-3 bg-black/20 border border-gray-600 rounded-lg text-white">
+                                    <option>High Quality</option>
+                                    <option>Standard</option>
+                                    <option>Low (Faster Processing)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Session Duration Limit</label>
+                                <input type="range" class="custom-range" min="1" max="30" value="10">
+                                <div class="flex justify-between text-sm text-gray-400 mt-1">
+                                    <span>1 min</span>
+                                    <span>30 min</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Auto-save Sessions</span>
+                                <button class="btn-secondary px-4 py-2">Enable</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+     Loading Overlay 
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="glass-card p-8 text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <h2 class="text-xl font-semibold text-white mb-2">Processing...</h2>
+            <p id="loading-status" class="text-gray-300">Analyzing your audio</p>
+        </div>
+    </div>
+
+     PDF Content (Hidden) 
+    <div id="pdf-content">
+        <div class="pdf-header">
+            <h1 style="color: #667eea; font-size: 24px; margin-bottom: 10px;">Think Connect - Session Report</h1>
+            <p style="color: #666; margin-bottom: 5px;">Generated on: <span id="pdf-timestamp"></span></p>
+            <p style="color: #666;">Session Duration: <span id="pdf-duration"></span></p>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Original Transcript</h3>
+            <div class="pdf-transcript">
+                <p id="pdf-transcript-text"></p>
+            </div>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Emotional Analysis</h3>
+            <div id="pdf-emotions"></div>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Personal Insights</h3>
+            <div id="pdf-summary-text"></div>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Question Responses</h3>
+            <div id="pdf-responses"></div>
+        </div>
+
+        <div class="pdf-section">
+            <h3>Recommendations</h3>
+            <div id="pdf-recommendations"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingStartTime;
+        let recordingTimer;
+        let sessionData = {};
+        let currentSection = 'welcome';
+        let sessionStats = JSON.parse(localStorage.getItem('thinkConnectStats')) || {
+            sessionCount: 0,
+            totalTime: 0
+        };
+
+        // DOM elements
+        const elements = {
+            recordButton: document.getElementById('recordButton'),
+            status: document.getElementById('status'),
+            recordingIndicator: document.getElementById('recording-indicator'),
+            recordingTimer: document.getElementById('recording-timer'),
+            audioControls: document.getElementById('audio-controls'),
+            recordedAudio: document.getElementById('recorded-audio'),
+            sessionCount: document.getElementById('session-count'),
+            totalTime: document.getElementById('total-time'),
+            loadingOverlay: document.getElementById('loading-overlay'),
+            loadingStatus: document.getElementById('loading-status'),
+            
+            // Sections
+            welcomeScreen: document.getElementById('welcome-screen'),
+            transcriptSection: document.getElementById('transcript-section'),
+            qaSection: document.getElementById('qa-section'),
+            summarySection: document.getElementById('summary-section'),
+            analyticsSection: document.getElementById('analytics-section'),
+            settingsSection: document.getElementById('settings-section'),
+            
+            // Content areas
+            transcriptContent: document.getElementById('transcript-content'),
+            emotionTags: document.getElementById('emotion-tags'),
+            questionContainer: document.getElementById('question-container'),
+            progressFill: document.getElementById('progress-fill'),
+            progressText: document.getElementById('progress-text'),
+            summaryText: document.getElementById('summary-text'),
+            recommendationList: document.getElementById('recommendation-list'),
+            
+            // Buttons
+            continueToQuestions: document.getElementById('continue-to-questions'),
+            submitAnswers: document.getElementById('submit-answers-button'),
+            downloadPdf: document.getElementById('download-pdf-button'),
+            restartButton: document.getElementById('restart-button'),
+            
+            // Quick actions
+            settingsBtn: document.getElementById('settings-btn'),
+            historyBtn: document.getElementById('history-btn'),
+            analyticsBtn: document.getElementById('analytics-btn'),
+            helpBtn: document.getElementById('help-btn')
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+            updateSessionStats();
+            setupEventListeners();
+            showSection('welcome');
+        });
+
+        // Event listeners setup
+        function setupEventListeners() {
+            elements.recordButton.addEventListener('click', toggleRecording);
+            elements.continueToQuestions.addEventListener('click', () => showSection('qa'));
+            elements.submitAnswers.addEventListener('click', submitAnswers);
+            elements.downloadPdf.addEventListener('click', generatePDF);
+            elements.restartButton.addEventListener('click', restartSession);
+            
+            // Quick actions
+            elements.settingsBtn.addEventListener('click', () => showSection('settings'));
+            elements.analyticsBtn.addEventListener('click', () => showSection('analytics'));
+            elements.helpBtn.addEventListener('click', showHelp);
+        }
+
+        // Recording functions
+        async function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                await startRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { 
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    } 
+                });
+                
+                mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'audio/webm;codecs=opus'
+                });
+                
+                audioChunks = [];
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = handleRecordingStop;
+                
+                mediaRecorder.start();
+                isRecording = true;
+                recordingStartTime = Date.now();
+                
+                updateRecordingUI(true);
+                startRecordingTimer();
+                
+            } catch (err) {
+                console.error("Microphone access error:", err);
+                elements.status.textContent = "Microphone access denied. Please allow access to record.";
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+            isRecording = false;
+            updateRecordingUI(false);
+            stopRecordingTimer();
+        }
+
+        function updateRecordingUI(recording) {
+            if (recording) {
+                elements.recordButton.classList.add('recording');
+                elements.recordingIndicator.style.opacity = '1';
+                elements.recordingTimer.style.opacity = '1';
+                elements.status.textContent = "Recording... Click to stop";
+            } else {
+                elements.recordButton.classList.remove('recording');
+                elements.recordingIndicator.style.opacity = '0';
+                elements.recordingTimer.style.opacity = '0';
+                elements.status.textContent = "Processing your audio...";
+            }
+        }
+
+        function startRecordingTimer() {
+            recordingTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                elements.recordingTimer.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function stopRecordingTimer() {
+            if (recordingTimer) {
+                clearInterval(recordingTimer);
+                recordingTimer = null;
+            }
+        }
+
+        async function handleRecordingStop() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            // Show audio controls
+            elements.recordedAudio.src = audioUrl;
+            elements.audioControls.classList.remove('hidden');
+            
+            // Update session stats
+            const duration = Math.floor((Date.now() - recordingStartTime) / 1000);
+            sessionStats.sessionCount++;
+            sessionStats.totalTime += duration;
+            localStorage.setItem('thinkConnectStats', JSON.stringify(sessionStats));
+            updateSessionStats();
+            
+            // Process the audio
+            await processAudio(audioBlob, duration);
+        }
+
+        async function processAudio(audioBlob, duration) {
+            const formData = new FormData();
+            formData.append("file", audioBlob, "recording.webm");
+            
+            showLoading("Transcribing your audio...");
+            
+            try {
+                // Simulate API call - replace with your actual endpoint
+                await simulateAPICall();
+                
+                // Mock data for demonstration
+                sessionData = {
+                    transcript: "I've been feeling really overwhelmed lately with work and personal responsibilities. Sometimes I feel like I'm not doing enough, and it's affecting my sleep and mood. I want to find better ways to manage stress and feel more balanced in my life.",
+                    emotions: [
+                        { emotion: "Stress", confidence: 0.85, type: "negative" },
+                        { emotion: "Overwhelm", confidence: 0.78, type: "negative" },
+                        { emotion: "Hope", confidence: 0.65, type: "positive" },
+                        { emotion: "Determination", confidence: 0.72, type: "positive" }
+                    ],
+                    questions: [
+                        "I feel in control of my daily responsibilities",
+                        "I have effective strategies for managing stress",
+                        "I maintain a healthy work-life balance",
+                        "I feel optimistic about my ability to improve",
+                        "I have adequate support systems in my life"
+                    ],
+                    duration: duration
+                };
+                
+                hideLoading();
+                displayTranscript();
+                showSection('transcript');
+                
+            } catch (error) {
+                console.error("Error processing audio:", error);
+                elements.status.textContent = `Error: ${error.message}`;
+                hideLoading();
+            }
+        }
+
+        function displayTranscript() {
+            elements.transcriptContent.querySelector('p').textContent = sessionData.transcript;
+            
+            // Display emotions
+            elements.emotionTags.innerHTML = '';
+            sessionData.emotions.forEach(emotion => {
+                const tag = document.createElement('span');
+                tag.className = `emotion-indicator emotion-${emotion.type}`;
+                tag.textContent = `${emotion.emotion} (${Math.round(emotion.confidence * 100)}%)`;
+                elements.emotionTags.appendChild(tag);
+            });
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = ['welcome', 'transcript', 'qa', 'summary', 'analytics', 'settings'];
+            sections.forEach(section => {
+                const element = document.getElementById(`${section}-section`) || document.getElementById(`${section}-screen`);
+                if (element) {
+                    element.classList.add('hidden');
+                }
+            });
+            
+            // Show requested section
+            const targetElement = document.getElementById(`${sectionName}-section`) || document.getElementById(`${sectionName}-screen`);
+            if (targetElement) {
+                targetElement.classList.remove('hidden');
+                targetElement.classList.add('fade-in');
+            }
+            
+            currentSection = sectionName;
+            
+            // Special handling for Q&A section
+            if (sectionName === 'qa' && sessionData.questions) {
+                displayQuestions();
+            }
+            
+            // Special handling for analytics section
+            if (sectionName === 'analytics') {
+                setTimeout(createCharts, 100);
+            }
+        }
+
+        function displayQuestions() {
+            elements.questionContainer.innerHTML = '';
+            
+            sessionData.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'fade-in';
+                questionDiv.style.animationDelay = `${index * 100}ms`;
+                
+                questionDiv.innerHTML = `
+                    <div class="bg-black/20 p-6 rounded-lg">
+                        <label class="block text-lg font-medium text-gray-200 mb-4">${question}</label>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm text-gray-400 min-w-[80px]">Strongly Disagree</span>
+                            <input type="range" 
+                                   id="question-${index}" 
+                                   class="custom-range flex-1" 
+                                   min="1" max="10" value="5"
+                                   aria-label="${question}">
+                            <span class="text-sm text-gray-400 min-w-[70px]">Strongly Agree</span>
+                            <div class="text-xl font-bold text-blue-400 w-8 text-center">
+                                <span id="q-val-${index}">5</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                elements.questionContainer.appendChild(questionDiv);
+                
+                // Add event listener for range input
+                const rangeInput = document.getElementById(`question-${index}`);
+                const valueDisplay = document.getElementById(`q-val-${index}`);
+                
+                rangeInput.addEventListener('input', (e) => {
+                    valueDisplay.textContent = e.target.value;
+                    updateProgress();
+                });
+            });
+        }
+
+        function updateProgress() {
+            const totalQuestions = sessionData.questions.length;
+            const answeredQuestions = Array.from(elements.questionContainer.querySelectorAll('input[type="range"]'))
+                .filter(input => input.value !== '5').length;
+            
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            elements.progressFill.style.width = `${progress}%`;
+            elements.progressText.textContent = `${answeredQuestions}/${totalQuestions}`;
+        }
+
+        async function submitAnswers() {
+            const answers = sessionData.questions.map((question, index) => ({
+                question: question,
+                answer: parseInt(document.getElementById(`question-${index}`).value)
+            }));
+            
+            showLoading("Generating your personalized insights...");
+            
+            try {
+                await simulateAPICall(2000);
+                
+                // Mock summary generation
+                const summary = generateMockSummary(answers);
+                const recommendations = generateMockRecommendations(answers);
+                
+                elements.summaryText.innerHTML = summary;
+                
+                // Display recommendations
+                elements.recommendationList.innerHTML = '';
+                recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start gap-3 text-gray-300';
+                    li.innerHTML = `
+                        <i data-feather="check-circle" class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0"></i>
+                        <span>${rec}</span>
+                    `;
+                    elements.recommendationList.appendChild(li);
+                });
+                
+                feather.replace();
+                hideLoading();
+                showSection('summary');
+                
+            } catch (error) {
+                console.error("Error generating summary:", error);
+                hideLoading();
+            }
+        }
+
+        function generateMockSummary(answers) {
+            const avgScore = answers.reduce((sum, a) => sum + a.answer, 0) / answers.length;
+            
+            if (avgScore >= 7) {
+                return `
+                    <p class="mb-4">Based on your responses, you demonstrate strong self-awareness and resilience. You're managing life's challenges with a positive outlook and have developed effective coping strategies.</p>
+                    <p class="mb-4">Your high scores suggest you have good emotional regulation and a solid support system. Continue building on these strengths while remaining open to growth opportunities.</p>
+                    <p>Remember that maintaining mental wellness is an ongoing journey, and it's normal to have ups and downs.</p>
+                `;
+            } else if (avgScore >= 4) {
+                return `
+                    <p class="mb-4">Your responses indicate you're navigating some challenges while maintaining hope for improvement. This balanced perspective shows emotional maturity and self-awareness.</p>
+                    <p class="mb-4">You've identified areas where you'd like to grow, which is the first step toward positive change. Consider focusing on building small, sustainable habits that support your wellbeing.</p>
+                    <p>Remember that seeking support and implementing gradual changes can lead to significant improvements over time.</p>
+                `;
+            } else {
+                return `
+                    <p class="mb-4">Thank you for your honesty in sharing your current struggles. Your responses suggest you're going through a challenging time, and it takes courage to acknowledge these feelings.</p>
+                    <p class="mb-4">Please know that these difficulties are temporary, and there are effective strategies and support systems that can help you feel better.</p>
+                    <p>Consider reaching out to a mental health professional who can provide personalized guidance and support tailored to your specific needs.</p>
+                `;
+            }
+        }
+
+        function generateMockRecommendations(answers) {
+            const recommendations = [
+                "Practice daily mindfulness or meditation for 10-15 minutes",
+                "Establish a consistent sleep schedule and bedtime routine",
+                "Engage in regular physical activity that you enjoy",
+                "Connect with supportive friends or family members regularly",
+                "Consider journaling to process thoughts and emotions",
+                "Set realistic daily goals and celebrate small achievements",
+                "Limit exposure to stressful news or social media",
+                "Explore creative outlets like art, music, or writing"
+            ];
+            
+            // Return 4-5 random recommendations
+            return recommendations.sort(() => 0.5 - Math.random()).slice(0, 5);
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Prepare PDF content
+            document.getElementById('pdf-timestamp').textContent = new Date().toLocaleString();
+            document.getElementById('pdf-duration').textContent = `${Math.floor(sessionData.duration / 60)}:${(sessionData.duration % 60).toString().padStart(2, '0')}`;
+            document.getElementById('pdf-transcript-text').textContent = sessionData.transcript;
+            
+            // Add emotions to PDF
+            const emotionsDiv = document.getElementById('pdf-emotions');
+            emotionsDiv.innerHTML = '';
+            sessionData.emotions.forEach(emotion => {
+                const span = document.createElement('span');
+                span.className = 'pdf-emotion-tag';
+                span.style.backgroundColor = emotion.type === 'positive' ? '#dcfce7' : '#fef2f2';
+                span.style.color = emotion.type === 'positive' ? '#166534' : '#991b1b';
+                span.textContent = `${emotion.emotion} (${Math.round(emotion.confidence * 100)}%)`;
+                emotionsDiv.appendChild(span);
+                emotionsDiv.appendChild(document.createTextNode(' '));
+            });
+            
+            // Add summary and responses
+            document.getElementById('pdf-summary-text').innerHTML = elements.summaryText.innerHTML;
+            
+            const responsesDiv = document.getElementById('pdf-responses');
+            responsesDiv.innerHTML = '';
+            sessionData.questions.forEach((question, index) => {
+                const answer = document.getElementById(`question-${index}`).value;
+                const div = document.createElement('div');
+                div.style.marginBottom = '10px';
+                div.innerHTML = `<strong>Q:</strong> ${question}<br><strong>A:</strong> ${answer}/10`;
+                responsesDiv.appendChild(div);
+            });
+            
+            // Add recommendations
+            const recDiv = document.getElementById('pdf-recommendations');
+            recDiv.innerHTML = elements.recommendationList.innerHTML.replace(/<i[^>]*><\/i>/g, '•');
+            
+            // Generate PDF
+            showLoading("Generating PDF...");
+            
+            try {
+                const canvas = await html2canvas(document.getElementById('pdf-content'), {
+                    scale: 2,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 595.28;
+                const pageHeight = 841.89;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                pdf.save(`ThinkConnect_Session_${new Date().toISOString().split('T')[0]}.pdf`);
+                hideLoading();
+                
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                hideLoading();
+                alert("Failed to generate PDF. Please try again.");
+            }
+        }
+
+        function createCharts() {
+            // Emotion distribution chart
+            const emotionCtx = document.getElementById('emotion-chart').getContext('2d');
+            new Chart(emotionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: sessionData.emotions?.map(e => e.emotion) || ['No data'],
+                    datasets: [{
+                        data: sessionData.emotions?.map(e => e.confidence) || [1],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#f5576c',
+                            '#4facfe',
+                            '#00f2fe'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Emotion Analysis',
+                            color: '#e0e0e0'
+                        },
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Progress over time chart (mock data)
+            const progressCtx = document.getElementById('progress-chart').getContext('2d');
+            new Chart(progressCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Wellness Score',
+                        data: [6.2, 6.8, 7.1, 7.5],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Progress Over Time',
+                            color: '#e0e0e0'
+                        },
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: '#e0e0e0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#e0e0e0'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function restartSession() {
+            sessionData = {};
+            elements.status.textContent = "Ready to listen";
+            elements.audioControls.classList.add('hidden');
+            elements.recordingTimer.textContent = "00:00";
+            showSection('welcome');
+        }
+
+        function updateSessionStats() {
+            elements.sessionCount.textContent = sessionStats.sessionCount;
+            elements.totalTime.textContent = `${Math.floor(sessionStats.totalTime / 60)}m`;
+        }
+
+        function showLoading(message) {
+            elements.loadingStatus.textContent = message;
+            elements.loadingOverlay.classList.add('visible');
+        }
+
+        function hideLoading() {
+            elements.loadingOverlay.classList.remove('visible');
+        }
+
+        function showHelp() {
+            alert("Think Connect Help:\n\n1. Click the microphone to start recording\n2. Share what's on your mind\n3. Answer the follow-up questions\n4. Receive personalized insights\n5. Download your session report\n\nYour privacy is our priority - all data stays local.");
+        }
+
+        // Utility function to simulate API calls
+        function simulateAPICall(delay = 1500) {
+            return new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        // Initialize feather icons after dynamic content
+        function refreshIcons() {
+            feather.replace();
+        }
+    </script>
+</body>
+</html>
