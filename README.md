@@ -1,105 +1,132 @@
-# 👋 Hi, I'm Mani Shankar Reddy
+# 🤖 Therapy Connect – RAG + Emotion Detection + Audio Processing
 
-🤖 AI/ML Engineer | NLP Enthusiast | Data Engineer
-📍 Open to Opportunities | Immediate Joiner
+## 📌 Overview
 
----
+This project is an advanced AI pipeline that integrates **emotion detection, audio processing, and Retrieval-Augmented Generation (RAG)** to analyze user input and generate intelligent responses.
 
-## 🚀 About Me
-
-I am a results-driven engineer with a strong focus on Artificial Intelligence and Machine Learning, specializing in building intelligent systems using NLP, real-time data processing, and scalable backend architectures.
-
-I have hands-on experience developing AI-powered applications, working with streaming data pipelines, and applying machine learning concepts to solve real-world problems.
+It is designed as a **modular, scalable backend system** using FastAPI, enabling real-time interaction with AI models.
 
 ---
 
-## 🧠 AI/ML Expertise
+## 🚀 Features
 
-* Natural Language Processing (NLP)
-* Sentiment Analysis & Mood Detection
-* Real-time Data Processing (Kafka, Spark Streaming)
-* Machine Learning Fundamentals (Supervised Learning, Model Evaluation)
-* Data Preprocessing & Feature Engineering
-* Model Deployment using APIs
+* 🎤 **Audio Processing** using FFmpeg
+* 😊 **Emotion Classification** from user input
+* 🧠 **RAG-based LLM System** for intelligent responses
+* ⚡ **FastAPI Backend** for real-time API interaction
+* 📦 Modular pipeline architecture for scalability
+* 🔄 Session-based processing and summarization
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Languages:** Python, SQL
-* **AI/ML:** NLP, Scikit-learn (Basics), Transformers (Learning)
-* **Data Engineering:** Kafka, Spark Streaming
-* **Backend:** FastAPI, REST APIs
-* **Databases:** MongoDB, MySQL
-* **Tools:** Git, Docker (Learning), Linux
+* **Languages:** Python
+* **Backend:** FastAPI
+* **AI/ML:** NLP, Emotion Detection Models, RAG (LLM Integration)
+* **Data Processing:** Kafka (concept), Streaming-ready pipeline
+* **Audio Processing:** FFmpeg
+* **Database:** Vector DB (for knowledge retrieval)
 
 ---
 
-## 📌 Featured AI/ML Projects
+## 🏗️ Project Structure
 
-### 🧠 NeuroAI – Real-Time Mood Detection System
-
-* Built an NLP-based system to detect user emotions from text and voice
-* Designed real-time streaming pipeline using Kafka and Spark Streaming
-* Processed and analyzed continuous data streams for instant predictions
-* Implemented scalable backend using FastAPI and MongoDB
-
-👉 Tech: Python, NLP, Kafka, Spark, MongoDB
-
----
-
-### 💬 Therapy Connect – AI Chatbot for Mental Health Support
-
-* Developed an intelligent chatbot using NLP techniques
-* Designed conversational workflows for user interaction
-* Integrated backend APIs for real-time responses
-* Focused on improving user engagement through AI-driven responses
-
-👉 Tech: Python, NLP, FastAPI
+```bash
+components/        # Core reusable modules  
+models/            # ML / AI models  
+pipeline_io/       # Input/Output handling  
+services/          # API services and orchestration  
+templates/         # Prompt templates / configs  
+transcriptions/    # Audio/text outputs  
+data/              # (Excluded large files)  
+```
 
 ---
 
-### 📊 Retail Data Intelligence (AI-driven Insights)
+## ⚙️ Installation
 
-* Analyzed sales and customer behavior data
-* Identified trends and patterns to support business decisions
-* Applied data analysis techniques to optimize product strategies
-* Worked with structured datasets to generate actionable insights
+```bash
+git clone https://github.com/yourusername/my-ai-pipeline
+cd my-ai-pipeline
 
-👉 Tech: SQL, Python, Data Analysis
-
----
-
-## 📈 AI/ML Focus Areas
-
-* Building intelligent real-time systems
-* Applying NLP in practical applications
-* Designing scalable AI pipelines
-* Exploring LLMs and Generative AI
+pip install -r requirements.txt
+```
 
 ---
 
-## 🏆 Achievements
+## ▶️ Run the Application
 
-* Improved system efficiency and reduced processing delays
-* Built real-time data pipelines for continuous analytics
-* Delivered AI-based solutions for practical use cases
-
----
-
-## 📚 Currently Learning
-
-* Deep Learning & Neural Networks
-* Transformers & Large Language Models (LLMs)
-* MLOps (Model Deployment & Monitoring)
+```bash
+uvicorn main_app:app --reload --port 8000
+```
 
 ---
 
-## 📫 Connect With Me
+## 🌐 API Usage
 
-* LinkedIn: https://www.linkedin.com/in/manishankarreddynayakanti/
-* Email: manishankar.nayakanti@gmail.com
+Open Swagger UI:
+
+👉 http://127.0.0.1:8000/docs
+
+### Available Endpoints:
+
+* **POST /start_session** → Initialize AI session
+* **POST /get_summary** → Generate AI-based summary
 
 ---
 
-⭐ *Passionate about building intelligent systems that solve real-world problems using AI & ML.*
+## 📊 Example Workflow
+
+1. Start session using `/start_session`
+2. Provide input (text/audio)
+3. System processes:
+
+   * Emotion detection
+   * Knowledge retrieval (RAG)
+   * LLM response generation
+4. Get summarized output via `/get_summary`
+
+---
+
+## 📦 Data & Model Files
+
+Large data files (vector databases, embeddings, and model artifacts) are not included due to GitHub size limitations.
+
+To run the project:
+
+* Create or integrate your own dataset
+* Place required files in:
+
+```bash
+data/knowledge_base_db/
+```
+
+---
+
+## 🔥 Key Highlights
+
+* End-to-end AI pipeline implementation
+* Combines NLP, audio processing, and LLMs
+* Designed for real-world scalable applications
+* Demonstrates backend + AI integration
+
+---
+
+## 🚀 Future Enhancements
+
+* Add frontend UI (React / Streamlit)
+* Deploy on AWS / Docker
+* Integrate advanced LLMs (GPT / Transformers)
+* Real-time streaming with Kafka
+
+---
+
+## 👨‍💻 Author
+
+**Mani Shankar Reddy**
+AI/ML Engineer | Data Engineer | Backend Developer
+
+---
+
+⭐ *If you like this project, feel free to star the repository!*
