@@ -125,7 +125,7 @@ data/knowledge_base_db/
 ## 👨‍💻 Author
 
 **Mani Shankar Reddy**
-AI/ML Engineer | Data Engineer | Backend Developer
+AI/ML Engineer | Data Engineer
 
 ---
 
